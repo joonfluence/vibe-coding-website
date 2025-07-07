@@ -26,7 +26,7 @@ const mockCourse = {
   isFree: true,
   duration: "1h 30m",
   thumbnailUrl: "https://via.placeholder.com/300x200",
-  videoUrl: "샘플_영상_URL_여기에_입력",
+  videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
   instructorId: "mock-user",
   instructor: mockInstructor,
   viewCount: 123,

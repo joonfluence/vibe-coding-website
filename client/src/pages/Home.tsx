@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import CourseCard from "@/components/CourseCard";
@@ -6,35 +6,27 @@ import CourseUploadModal from "@/components/CourseUploadModal";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
-// 서버 연동 코드 제거 및 mock 데이터 사용
-const mockCourses = [
-  {
-    id: 1,
-    title: "Mock Course 1",
-    description: "This is a mock course.",
-    category: "Development",
-    price: 0,
-    isFree: true,
-    duration: "1h 30m",
-    thumbnailUrl: "https://via.placeholder.com/300x200",
-    videoUrl: "샘플_영상_URL_여기에_입력",
-    instructorId: "mock-user",
-    viewCount: 123,
-    rating: 4.5,
-    ratingCount: 10,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  // 필요시 더 추가
-];
+const SUPABASE_URL = "https://vwektyamnobdszjwxqnp.supabase.co/rest/v1";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3ZWt0eWFtbm9iZHN6and4cW5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY4NTkxNTYsImV4cCI6MjA2MjQzNTE1Nn0.JBBuzLHgFIZN1M6pYZTP9TvkTpB4JNQC8XIktffTGWI";
 
 export default function Home() {
   const [showUploadModal, setShowUploadModal] = useState(false);
-  
-  // 기존 useQuery 등 서버 연동 코드 제거
-  // const { data: courses, isLoading } = useQuery(...)
-  const courses = mockCourses;
-  const isLoading = false;
+  const [courses, setCourses] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${SUPABASE_URL}/courses?select=*`, {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setCourses(data);
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
@@ -58,7 +50,7 @@ export default function Home() {
           </Button>
         </div>
 
-        {isLoading ? (
+        {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="bg-white dark:bg-gray-700 rounded-xl shadow-md animate-pulse">
