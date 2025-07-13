@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User } from "lucide-react";
+import { useAuth, signInWithGoogle } from "@/hooks/useAuth";
 
 interface CommentSectionProps {
   courseId: number;
@@ -21,7 +21,7 @@ const mockComments = [
 export default function CommentSection({ courseId }: CommentSectionProps) {
   const [comments, setComments] = useState(mockComments);
   const [commentText, setCommentText] = useState("");
-  const isAuthenticated = true; // 항상 로그인된 상태로 mock
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +49,9 @@ export default function CommentSection({ courseId }: CommentSectionProps) {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    const diffInHours = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60)
+    );
     if (diffInHours < 1) {
       return "방금 전";
     } else if (diffInHours < 24) {
@@ -60,13 +62,33 @@ export default function CommentSection({ courseId }: CommentSectionProps) {
     }
   };
 
-  const handleLogin = () => alert("Login (mock)");
+  const handleLogin = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (e: any) {
+      alert("구글 로그인 실패: " + e.message);
+    }
+  };
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8">
       <h3 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">
         댓글 <span className="text-gray-500">({comments?.length || 0})</span>
       </h3>
+      {/* 로그인 상태 표시 및 로그아웃 버튼 */}
+      {isAuthenticated && user && (
+        <div className="flex items-center justify-between mb-4">
+          <div className="text-gray-700 dark:text-gray-300">
+            {user.email || user.nickname || "로그인됨"}
+          </div>
+          <Button
+            onClick={logout}
+            className="bg-gray-300 dark:bg-gray-600 text-gray-900 dark:text-gray-100 ml-2"
+          >
+            로그아웃
+          </Button>
+        </div>
+      )}
       {/* Comment Form */}
       {isAuthenticated ? (
         <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
@@ -109,9 +131,7 @@ export default function CommentSection({ courseId }: CommentSectionProps) {
             <div key={comment.id} className="flex space-x-3">
               <Avatar className="w-10 h-10">
                 <AvatarImage src={comment.user?.profileImageUrl} />
-                <AvatarFallback>
-                  {getUserInitial(comment.user)}
-                </AvatarFallback>
+                <AvatarFallback>{getUserInitial(comment.user)}</AvatarFallback>
               </Avatar>
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-1">
@@ -130,7 +150,9 @@ export default function CommentSection({ courseId }: CommentSectionProps) {
           ))}
         </div>
       ) : (
-        <div className="text-gray-500 dark:text-gray-400">아직 댓글이 없습니다.</div>
+        <div className="text-gray-500 dark:text-gray-400">
+          아직 댓글이 없습니다.
+        </div>
       )}
     </div>
   );

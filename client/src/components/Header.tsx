@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth, signInWithGoogle } from "@/hooks/useAuth";
 import { useTheme } from "@/components/ThemeProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,17 +9,25 @@ import { FaGoogle } from "react-icons/fa";
 
 export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement search functionality
-    console.log("Search:", searchQuery);
   };
 
-  const handleLogin = () => alert("Login (mock)");
-  const handleLogout = () => alert("Logout (mock)");
+  const handleLogin = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (e) {
+      alert(
+        "구글 로그인 실패: " + (e instanceof Error ? e.message : String(e))
+      );
+    }
+  };
+  const handleLogout = async () => {
+    await logout();
+  };
 
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
@@ -83,19 +91,15 @@ export default function Header() {
                       />
                     ) : (
                       <span className="text-sm font-medium">
-                        {user?.nickname?.[0] || user?.firstName?.[0] || user?.email?.[0] || "U"}
+                        {user?.email?.[0] || "U"}
                       </span>
                     )}
                   </div>
                   <span className="text-sm text-gray-700 dark:text-gray-300">
-                    {user?.nickname || user?.firstName || "사용자"}
+                    {user?.email || "사용자"}
                   </span>
                 </div>
-                <Button
-                  onClick={handleLogout}
-                  variant="outline"
-                  size="sm"
-                >
+                <Button onClick={handleLogout} variant="outline" size="sm">
                   로그아웃
                 </Button>
               </div>

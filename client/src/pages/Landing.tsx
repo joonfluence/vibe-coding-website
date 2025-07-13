@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import CourseCard from "@/components/CourseCard";
 import { Button } from "@/components/ui/button";
+import { useAuth, signInWithGoogle } from "@/hooks/useAuth";
 
 // 서버 연동 코드 제거 및 mock 데이터 사용
 const mockCourses = [
@@ -33,7 +34,15 @@ export default function Landing() {
   const isLoading = false;
 
   // 로그인 버튼 등 서버 이동 부분은 alert로 대체
-  const handleLogin = () => alert("Login (mock)");
+  const handleLogin = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (e) {
+      alert(
+        "구글 로그인 실패: " + (e instanceof Error ? e.message : String(e))
+      );
+    }
+  };
 
   const scrollToCourses = () => {
     document.getElementById("courses")?.scrollIntoView({ behavior: "smooth" });
@@ -49,7 +58,8 @@ export default function Landing() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                커리어 첫걸음을 위한<br />
+                커리어 첫걸음을 위한
+                <br />
                 <span className="text-blue-200">실무 중심 강의</span>
               </h2>
               <p className="text-lg text-blue-100 mb-8">
@@ -88,19 +98,29 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">7,500+</div>
-              <div className="text-gray-600 dark:text-gray-400">등록된 강의</div>
+              <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">
+                7,500+
+              </div>
+              <div className="text-gray-600 dark:text-gray-400">
+                등록된 강의
+              </div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">16,500+</div>
+              <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">
+                16,500+
+              </div>
               <div className="text-gray-600 dark:text-gray-400">수강생</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">2,100+</div>
+              <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">
+                2,100+
+              </div>
               <div className="text-gray-600 dark:text-gray-400">강사</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">98%</div>
+              <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">
+                98%
+              </div>
               <div className="text-gray-600 dark:text-gray-400">만족도</div>
             </div>
           </div>
@@ -124,7 +144,9 @@ export default function Landing() {
                 key={category.name}
                 className="bg-white dark:bg-gray-800 p-4 rounded-lg text-center hover:shadow-md transition-shadow cursor-pointer"
               >
-                <div className={`text-2xl mb-2 ${category.color}`}>{category.icon}</div>
+                <div className={`text-2xl mb-2 ${category.color}`}>
+                  {category.icon}
+                </div>
                 <div className="font-medium">{category.name}</div>
               </div>
             ))}
@@ -142,7 +164,10 @@ export default function Landing() {
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="bg-white dark:bg-gray-700 rounded-xl shadow-md animate-pulse">
+                <div
+                  key={i}
+                  className="bg-white dark:bg-gray-700 rounded-xl shadow-md animate-pulse"
+                >
                   <div className="w-full h-48 bg-gray-300 dark:bg-gray-600 rounded-t-xl"></div>
                   <div className="p-4 space-y-3">
                     <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
@@ -163,10 +188,7 @@ export default function Landing() {
                   <div className="text-gray-500 dark:text-gray-400 text-lg">
                     아직 등록된 강의가 없습니다.
                   </div>
-                  <Button
-                    onClick={handleLogin}
-                    className="mt-4"
-                  >
+                  <Button onClick={handleLogin} className="mt-4">
                     첫 번째 강의를 업로드해보세요!
                   </Button>
                 </div>
@@ -179,9 +201,12 @@ export default function Landing() {
       {/* CTA Section */}
       <section className="bg-gradient-to-r from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 text-white py-16">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h3 className="text-3xl font-bold mb-4">당신의 지식을 공유해보세요</h3>
+          <h3 className="text-3xl font-bold mb-4">
+            당신의 지식을 공유해보세요
+          </h3>
           <p className="text-xl text-gray-300 mb-8">
-            전문성을 바탕으로 강의를 만들고, 많은 사람들과 지식을 나누며 수익도 창출하세요.
+            전문성을 바탕으로 강의를 만들고, 많은 사람들과 지식을 나누며 수익도
+            창출하세요.
           </p>
           <Button
             onClick={handleLogin}
@@ -203,30 +228,68 @@ export default function Landing() {
                 </div>
                 <h4 className="text-xl font-bold text-white">StartClass</h4>
               </div>
-              <p className="text-gray-400">커리어 첫걸음을 위한 실무 중심 온라인 강의 플랫폼</p>
+              <p className="text-gray-400">
+                커리어 첫걸음을 위한 실무 중심 온라인 강의 플랫폼
+              </p>
             </div>
             <div>
               <h5 className="font-semibold text-white mb-4">서비스</h5>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">강의 찾기</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">강의 업로드</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">카테고리</a></li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    강의 찾기
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    강의 업로드
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    카테고리
+                  </a>
+                </li>
               </ul>
             </div>
             <div>
               <h5 className="font-semibold text-white mb-4">고객지원</h5>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">자주 묻는 질문</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">문의하기</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">공지사항</a></li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    자주 묻는 질문
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    문의하기
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    공지사항
+                  </a>
+                </li>
               </ul>
             </div>
             <div>
               <h5 className="font-semibold text-white mb-4">회사</h5>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">회사소개</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">이용약관</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">개인정보처리방침</a></li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    회사소개
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    이용약관
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    개인정보처리방침
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
